@@ -9,7 +9,7 @@ import waig548.NNN.util.data.NetworkSerializer
 import waig548.NNN.util.math.Matrix
 import waig548.NNN.util.math.applyFunction
 import waig548.NNN.util.math.matrixMul
-import waig548.NNN.util.math.minus
+import waig548.NNN.util.math.*
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.random.Random
@@ -42,6 +42,43 @@ class Tests
         println(m1==m5)
     }
 
+    @Test
+    fun `Test inexact shape Matrix operations`()
+    {
+        val m1 = Matrix(5, 5) {it*0.01+0.01}
+        val m2 = Matrix(5, 2) {it+1.0}
+        val m3 = Matrix(2, 5) {it+1.0}
+        val m4 = m1 - m2
+        println(m4)
+        val m5 = m2 - m1
+        println(m5)
+        val m6 = m1 - m3
+        println(m6)
+        val m7 = m3 - m1
+        println(m7)
+    }
+
+    @Test
+    fun `Test Matrix mean and variance operations`()
+    {
+        val m1 = Matrix(5, 5){(it+1.0)}
+        val m2 = m1.mean(0)
+        val m3 = m1.variance(0)
+        val m4 = m1.mean(1)
+        val m5 = m1.variance(1)
+        println("$m1\n$m2\n$m3\n$m4\n$m5")
+    }
+
+    @Test
+    fun `Test Matrix operation chain`()
+    {
+        val m1 = Matrix(5, 1){it+1.0}
+        val m2 = Matrix(1, 5){it+1.0}
+        val i1 = Matrix.I(1)
+        val i5 = Matrix.I(5)
+        println(i1(m1(m2)))
+        println(i5(m2(m1)))
+    }
     @Test
     fun `Test Serialize Optimizer`()
     {

@@ -83,12 +83,12 @@ fun clamp(a: Matrix<Double>, lowerBound: Double, upperBound: Double): Matrix<Dou
     return Matrix(a.width, a.height, a.map { min(max(lowerBound, it), upperBound) }.toMutableList())
 }
 
-fun normalize(vec: Matrix<Double>): Matrix<Double>
+fun normalize(vec: Matrix<Double>): Pair<Matrix<Double>, Pair<Double, Double>>
 {
     val mean = vec.average()
     val variance = vec.reduce { acc, d -> acc+(d-mean)*(d-mean) }
     val stdDev = sqrt(variance/vec.dimension)
-    return Matrix(vec.width, vec.height, vec.map { (it-mean)/stdDev }.toMutableList())
+    return Matrix(vec.width, vec.height, vec.map { (it-mean)/stdDev }.toMutableList()) to (mean to stdDev)
 }
 
 fun scalingNormalize(vec: Matrix<Double>): Pair<Matrix<Double>, Double>

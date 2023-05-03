@@ -66,11 +66,14 @@ class MNIST
     fun `3-Train`()
     {
         val model = NetworkSerializer.deserializeFromFile("mnist/MNIST.model")
-        val trainSet = DataSetSerializer.deserializeFromFile("mnist/MNIST-train.data").shuffled().chunked(300)
-        val testSet = DataSetSerializer.deserializeFromFile("mnist/MNIST-test.data").shuffled().chunked(50)
+        val trainSet = DataSetSerializer.deserializeFromFile("mnist/MNIST-train.data").shuffled().chunked(model.batchSize)
+        val batches = trainSet.size
+        val testSet = DataSetSerializer.deserializeFromFile("mnist/MNIST-test.data").shuffled().run { chunked(size/batches)}
+
         val iterator = trainSet.iterator()
         val testIterator = testSet.iterator()
 
+        model.training = true
         while (iterator.hasNext())
         {
             val batch = iterator.next()
@@ -89,7 +92,7 @@ class MNIST
                     .map { m -> m/batch.size.toDouble() }.zipWithNext().first()
             }
             println(
-                "Epoch: ${model.getEpoch()}, avg_diff: ${
+                "Epoch: ${model.getEpoch()} of $batches, avg_diff: ${
                     Matrix.matrixOf(r.map {
                         pow(it.first-it.second, 2.0).toList()
                     }).transposed().chunked(batch.size).map { it.average() }

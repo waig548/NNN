@@ -8,6 +8,7 @@ import waig548.NNN.util.math.plus
 import waig548.NNN.util.math.pow
 import waig548.NNN.util.math.times
 import kotlin.math.pow
+import kotlin.math.sqrt
 
 @Serializable
 @SerialName("Adam")
@@ -50,10 +51,10 @@ class Adam private constructor(
         velocityDW[layerID] = velocityDW[layerID]*beta2+pow(dW, 2.0)*(1-beta2)
         velocityDB[layerID] = velocityDB[layerID]*beta2+pow(dB, 2.0)*(1-beta2)
 
-        val momentDWCorrection = momentDW[layerID]/(1-beta1.pow(iteration))
-        val momentDBCorrection = momentDB[layerID]/(1-beta1.pow(iteration))
-        val velocityDWCorrection = velocityDW[layerID]/(1-beta2.pow(iteration))
-        val velocityDBCorrection = velocityDB[layerID]/(1-beta2.pow(iteration))
+        val momentDWCorrection = momentDW[layerID]/(1-beta1.pow(sqrt(iteration.toDouble())))
+        val momentDBCorrection = momentDB[layerID]/(1-beta1.pow(sqrt(iteration.toDouble())))
+        val velocityDWCorrection = velocityDW[layerID]/(1-beta2.pow(sqrt(iteration.toDouble())))
+        val velocityDBCorrection = velocityDB[layerID]/(1-beta2.pow(sqrt(iteration.toDouble())))
 
         return (div(momentDWCorrection, pow(velocityDWCorrection, 0.5)+epsilon))*alpha to
                 (div(momentDBCorrection, pow(velocityDBCorrection, 0.5)+epsilon))*alpha

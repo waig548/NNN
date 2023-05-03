@@ -15,6 +15,5 @@ sealed interface Optimizer
         //biases: Matrix<Double>,
         dW: Matrix<Double>,
         dB: Matrix<Double>
-    )
-            : Pair<Matrix<Double>, Matrix<Double>>
+    ): Pair<Matrix<Double>, Matrix<Double>>
 }

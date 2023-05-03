@@ -19,9 +19,10 @@ class Matrix<T>(
 
     @Transient
     val dimension = data.size
-
-    fun get(x: Int, y: Int) = data[y*width+x]
-    fun set(x: Int, y: Int, value: T)
+    @Transient
+    val shape = listOf(width, height)
+    operator fun get(x: Int, y: Int = 0) = data[y*width+x]
+    operator fun set(x: Int, y: Int = 0, value: T)
     {
         data[y*width+x] = value
     }
@@ -36,7 +37,7 @@ class Matrix<T>(
     override fun iterator(): Iterator<T> = data.iterator()
     override fun toString(): String
     {
-        return "$width, $height, $data"
+        return "$width, $height, ${data.chunked(width).map { "\n"+it.toString() }}"
     }
 
     override fun equals(other: Any?): Boolean
@@ -62,6 +63,7 @@ class Matrix<T>(
     companion object
     {
         fun <T> vectorOf(list: List<T>) = Matrix(list.size, 1, list::get)
+        //fun <T> matrixOf(matrix: List<Matrix<T>>) = matrixOf(matrix.map{it.toList()})
         fun <T> matrixOf(matrix: List<List<T>>): Matrix<T>
         {
             if (matrix.isEmpty())

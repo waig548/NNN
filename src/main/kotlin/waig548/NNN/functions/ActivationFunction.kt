@@ -12,10 +12,10 @@ import kotlinx.serialization.encoding.Encoder
 sealed interface ActivationFunction : (Double) -> Double
 {
     val name: String
-
+    val derivative: (Double) -> Double
     override operator fun invoke(z: Double): Double
 
-    fun derivative(z: Double): Double
+
 
     companion object : KSerializer<ActivationFunction>
     {

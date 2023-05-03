@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import waig548.NNN.functions.ActivationFunction
 import waig548.NNN.util.math.Matrix
-import waig548.NNN.util.math.applyFunction
+import waig548.NNN.util.math.*
 import waig548.NNN.util.math.checkDimensionExact
 import waig548.NNN.util.math.div
 import waig548.NNN.util.math.mul
@@ -57,7 +57,7 @@ class Layer private constructor(
             output = Matrix.vectorOf(second)
         }
         if (isLastLayer)
-            safeSoftMax(output).apply {
+            safeSoftMax(zs).apply {
                 output = first
                 scaleLength = second
             }
@@ -66,15 +66,15 @@ class Layer private constructor(
 
     fun backprop(diff: Matrix<Double>): Pair<Matrix<Double>, Pair<Matrix<Double>, Matrix<Double>>>
     {
-        var db = mul(applyFunction(activationFunction::derivative, zs), scale(diff, 2.0))
+        var db = mul(activationFunction.derivative(zs), scale(diff, 2.0))
         if (isLastLayer)
-            db *= scaleLength
-        val dW = ((x.transposed()*db)/x.dimension.toDouble()).transposed()
+            db = diff * scaleLength
+        val dW = ((x.transposed()(db))/x.dimension.toDouble()).transposed()
         val da = (Matrix(
             neurons[0].weight.dimension,
             neurons.size,
             neurons.map { it.weight }.reduce(Iterable<Double>::plus).toMutableList()
-        ).transposed()*db.transposed()).transposed()
+        ).transposed()(db.transposed())).transposed()
         return da to (dW to db)
     }
 

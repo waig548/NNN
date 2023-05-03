@@ -1,9 +1,13 @@
 package waig548.NNN.network
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import waig548.NNN.functions.ActivationFunction
 import waig548.NNN.optimizer.Adam
 import waig548.NNN.optimizer.Optimizer
+import waig548.NNN.normalization.BatchNormalization
+import waig548.NNN.normalization.FeatureNormalization
+import waig548.NNN.normalization.Normalization
 import waig548.NNN.util.math.Matrix
 import waig548.NNN.util.math.minus
 import kotlin.random.Random
@@ -14,8 +18,10 @@ class Network private constructor(
     private var inputSize: Int,
     private val activationFunction: ActivationFunction,
     val layers: MutableList<Layer>,
+    private var epoch: Int,
+    val batchSize: Int,
     val optimizer: Optimizer,
-    private var epoch: Int
+    val normalizations: List<Normalization>
 ) : NetworkBase()
 {
     constructor(
@@ -23,7 +29,8 @@ class Network private constructor(
         rand: Random,
         inputSize: Int,
         layerSizes: List<Int>,
-        activationFunction: ActivationFunction
+        activationFunction: ActivationFunction,
+        batchSize: Int = 50
     ) : this(
         name,
         inputSize,
@@ -36,9 +43,9 @@ class Network private constructor(
                 if (it==0) inputSize else layerSizes[it-1],
                 activationFunction
             )
-        },
+        }, 1, batchSize,
         Adam((layerSizes).mapIndexed { index: Int, size: Int -> (if (index==0) inputSize else layerSizes[index-1]) to size }),
-        1
+        listOf(BatchNormalization(layerSizes, batchSize))
     )
 
     init
@@ -53,6 +60,7 @@ class Network private constructor(
     }
 
     override val size: Int = layers.size
+    @Transient var training = false
 
     fun getEpoch() = epoch
 
@@ -80,6 +88,11 @@ class Network private constructor(
             d.add(tmp.second)
         }
         return d.reversed()
+    }
+
+    fun pass(input: Matrix<Double>): Matrix<Double>
+    {
+        return Matrix.I(1)
     }
 
     fun updateParams(params: List<Pair<Matrix<Double>, Matrix<Double>>>)
